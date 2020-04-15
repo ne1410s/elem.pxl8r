@@ -1,7 +1,7 @@
-import { DemoTooltip } from './demo-tooltip/demo-tooltip';
+import { Pxl8r } from './pxl8r/pxl8r';
 
 if ('customElements' in window) {
-  window.customElements.define('ne14-demo-tooltip', DemoTooltip);
+  window.customElements.define('ne14-pxl8r', Pxl8r);
 }
 
-export { DemoTooltip };
+export { Pxl8r };

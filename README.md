@@ -1,31 +1,30 @@
-# @ne1410s/demo
-## A custom element for demonstration purposes and to serve as a project template.
+# @ne1410s/pxl8r
+## A custom element that facilitates image pixelation.
 ```html
-<ne14-demo-tooltip reveal="Hey!">
-  <p>Hello world</p>
-</ne14-demo-tooltip>
+<ne14-pxl8r></ne14-pxl8r>
 ```
 - **Use:** `<script src="PATH_TO_UMD_SCRIPT"></script>`
-- **Extend:** *npm i -S @ne1410s/demo*
+- **Extend:** *npm i -S @ne1410s/pxl8r*
 ### Attributes
 ```html
-<ne14-demo-tooltip corner="3" reveal="Definition here">YO' STUFF<ne14-demo-tooltip>
+<ne14-pxl8r src="..."></ne14-pxl8r>
 ```
-- **corner**: If specified, the reveal text is positioned in a corner of the screen:
-  - 1: Top-left, 2: Top-right, 3: Bottom-right, 4: Bottom-left
-- **reveal**: The definition text that gets shown on hover
+- **src**: Sets a new image source
+- **contrast**: Sets the contrast 0 - 100
+- **pixels-x**: Sets the number of 
 
 ### Events
 ```javascript
-const tooltip = document.querySelector('ne14-demo-tooltip');
+const tooltip = document.querySelector('ne14-pxl8r');
 
-tooltip.addEventListener('...', () => {
-  console.log('Event fired!');
+tooltip.addEventListener('rendered', () => {
+  console.log('Rendered');
 });
 ```
-- *There are no bespoke events raised in the internal workings of this element*
+- **rendered**: Fired on pixelation complete with the specified image and parameters
 ### Methods
-- *There are no bespoke methods exposed in this element*
+- *There are no bespoke methods exposed by this element*
 ### Properties
-- `set` **corner** (number): Sets the attribute with the corresponding value
-- `set` **reveal** (string): Sets the attribute with the corresponding value
+- `set` **src** (string): Sets the attribute with the corresponding value
+- **contrast** (number): Gets or sets the contrast 0 - 100
+- **pixels-x** (number): Gets or sets the number of pixels to use in the x-dimension. The aspect ratio is preserved in y.

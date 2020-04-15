@@ -1,11 +1,11 @@
 {
-  "name": "@ne1410s/demo",
+  "name": "@ne1410s/pxl8r",
   "version": "0.0.0",
-  "description": "A custom element for demonstration purposes and to serve as a project template.",
-  "main": "dist/ne14_demo.cjs.min.js",
-  "module": "dist/ne14_demo.esm.min.js",
-  "browser": "dist/ne14_demo.umd.min.js",
-  "displayName": "ne_demo",
+  "description": "A custom element that facilitates image pixelation.",
+  "main": "dist/ne14_pxl8r.cjs.min.js",
+  "module": "dist/ne14_pxl8r.esm.min.js",
+  "browser": "dist/ne14_pxl8r.umd.min.js",
+  "displayName": "ne_pxl8r",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
@@ -21,19 +21,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ne1410s/elem.demo.git"
+    "url": "git+https://github.com/ne1410s/elem.pxl8r.git"
   },
   "keywords": [
     "ES",
-    "demo",
-    "tooltip"
+    "Pixelator",
+    "Pxl8r"
   ],
   "author": "ne1410s <pgj646@gmail.com> (http://ne1410s.co.uk)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ne1410s/elem.demo/issues"
+    "url": "https://github.com/ne1410s/elem.pxl8r/issues"
   },
-  "homepage": "https://github.com/ne1410s/elem.demo#readme",
+  "homepage": "https://github.com/ne1410s/elem.pxl8r#readme",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.1.0",
     "@rollup/plugin-json": "^4.0.2",
