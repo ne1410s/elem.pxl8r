@@ -2,21 +2,21 @@ import { CustomElementBase } from '@ne1410s/cust-elems';
 
 import markupUrl from './pxl8r.html';
 import stylesUrl from './pxl8r.css';
-import { RgbaFilter, GreyscaleFilter } from '../filter/models';
+import { RgbaFilter, MonochromeFilter } from '../filter/models';
 
 export class Pxl8r extends CustomElementBase {
 
   public static readonly observedAttributes = ['src', 'contrast', 'x'];
-  private static readonly DEF_X = 30;
-  private static readonly DEF_CONTRAST = 50;
 
   private readonly _reader = new FileReader();
   private readonly _original = new Image();
+  private _dimensionData: ImageData;
+  private _workingData: ImageData;
 
   private readonly _elemCanvas: HTMLCanvasElement;
   private readonly _context: CanvasRenderingContext2D;
 
-  private readonly _elemContrast: HTMLInputElement;
+  private readonly _elemBrightness: HTMLInputElement;
   private readonly _elemX: HTMLInputElement;
   private readonly _elemPicker: HTMLInputElement;
 
@@ -25,8 +25,8 @@ export class Pxl8r extends CustomElementBase {
     else this.removeAttribute('src');
   }
 
-  public set contrast(value: number) { this.setAttribute('x', `${Math.max(0, Math.min(value, 100))}`); }
-  public get contrast(): number { return parseInt(this._elemContrast.value); }
+  public set brightness(value: number) { this.setAttribute('x', `${Math.max(0, Math.min(value, 100))}`); }
+  public get brightness(): number { return parseInt(this._elemBrightness.value); }
 
   public set x(value: number) { this.setAttribute('x', `${value}`); }
   public get x(): number { return parseInt(this._elemX.value); }
@@ -38,14 +38,14 @@ export class Pxl8r extends CustomElementBase {
     this._context = this._elemCanvas.getContext('2d');
     this._context.imageSmoothingEnabled = false;
 
-    this._elemContrast = this.root.querySelector('#contrast');
-    this._elemContrast.value = `${Pxl8r.DEF_CONTRAST}`;
+    this._elemBrightness = this.root.querySelector('#brightness');
     this._elemX = this.root.querySelector('#pixels-x');
-    this._elemX.value = `${Pxl8r.DEF_X}`;
     this._elemPicker = this.root.querySelector('#filepicker');
     
     this._original.addEventListener('load', () => this.onImageLoad());
     this._reader.addEventListener('load', e => this._original.src = e.target.result as string);
+    this._elemBrightness.addEventListener('input', () => this.onFilterChange());
+    this._elemX.addEventListener('input', () => this.onDimsChange());
     this._elemPicker.addEventListener('change', () => {
       const file = this._elemPicker.files[0];
       if (file) {
@@ -63,7 +63,7 @@ export class Pxl8r extends CustomElementBase {
         this._original.src = newValue;
         break;
       case 'contrast':
-        this._elemContrast.value = newValue;
+        this._elemBrightness.value = newValue;
         break;
       case 'x':
         this._elemX.value = newValue;
@@ -76,25 +76,43 @@ export class Pxl8r extends CustomElementBase {
   }
 
   private onImageLoad() {
-    const aspect = this._original.width / this._original.height;
-    const y = Math.round(this.x / aspect);
-    const sizedData = this.getSizedData(this.x, y);
-    this.applyFilter(sizedData, GreyscaleFilter);
-    this._context.clearRect(0, 0, this.x, y);
-    this._context.putImageData(sizedData, 0, 0);
+    this.onDimsChange();
   }
 
-  private getSizedData(x: number, y: number): ImageData {
-    this._elemCanvas.width = x;
-    this._elemCanvas.height = y;
-    this._context.drawImage(this._original, 0, 0, x, y);
-    return this._context.getImageData(0, 0, x, y);
+  private onDimsChange() {
+    if (this._original) {
+      const aspect = this._original.width / this._original.height;
+      const x = this._elemCanvas.width = this.x;
+      const y = this._elemCanvas.height = Math.ceil(x / aspect);
+
+      this._context.drawImage(this._original, 0, 0, x, y);
+      this._dimensionData = this._context.getImageData(0, 0, x, y);
+      this.onFilterChange();
+    }
+  }
+
+  private onFilterChange() {
+    if (this._dimensionData) {
+      //let filter = new GreyscaleFilter(8);
+      let filter = new MonochromeFilter(255 - this.brightness);
+      this._workingData = new ImageData(
+        this._dimensionData.data.slice(),
+        this._dimensionData.width,
+        this._dimensionData.height);
+
+      this.applyFilter(this._workingData, filter);
+      this.onPixelate();
+    }
+  }
+
+  private onPixelate() {
+    this._context.putImageData(this._workingData, 0, 0);
   }
 
   private applyFilter(arr: ImageData, filter: RgbaFilter): void {
     for (let i = 3; i < arr.data.length; i += 4) {
       const rgba = arr.data.slice(i - 3, i + 1);
-      filter(rgba);
+      filter.apply(rgba);
       arr.data[i - 3] = rgba[0];
       arr.data[i - 2] = rgba[1];
       arr.data[i - 1] = rgba[2];
@@ -114,11 +132,5 @@ export class Pxl8r extends CustomElementBase {
       const that = this;
       timeout = setTimeout(() => func.call(that, arg), delay);
     };
-  }
-
-  private range(val: string|number, def: number, to: number, min: number, max: number): number {
-    val = parseInt(`${val}`)
-    const rnd = to * Math.round((isNaN(val) ? def : val) / to);
-    return Math.max(min, Math.min(max, rnd));
   }
 }
