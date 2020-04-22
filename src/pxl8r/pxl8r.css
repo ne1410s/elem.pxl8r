@@ -11,8 +11,17 @@ canvas {
 
 #control-panel {
   position: absolute;
+  bottom: 0; right: 0;
+  margin: 1em;
+  padding: .5em;
+  display: flex;
+  opacity: .4;
   background-color: #ffffff;
-  font-size: .7rem;
+  font-size: .8rem;
+}
+
+#control-panel:hover {
+  opacity: 1;
 }
 
 #control-panel[data-filter=bw] label.filter.bw { display: block; }
@@ -23,16 +32,19 @@ label.filter { display: none; }
 label {
   position: relative;
   display: block;
-  width: 5em;
+}
+
+#control-panel label {
+  width: 10em;
 }
 
 label > span {
   position: absolute;
   top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(1, 2);
   text-transform: uppercase;
-  font-size: .9em;
   pointer-events: none;
+  font-size: .5em;
 }
 
 label.file > span {
@@ -41,11 +53,23 @@ label.file > span {
   pointer-events: all;
 }
 
-label.file > input[type=file] {
+#filepicker {
   display: none;
 }
 
-input, select {
+label.file {
+  order: 2;
+}
+
+#filter {
+  order: 1;
+}
+
+select {
+  font: inherit;
+}
+
+input {
   font: inherit;
   width: 100%;
   box-sizing: border-box;

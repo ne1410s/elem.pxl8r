@@ -135,6 +135,7 @@ export class Pxl8r extends CustomElementBase {
 
   private onPaintPixels() {
     this._context.putImageData(this._workingData, 0, 0);
+    this._elemCanvas.closest('.root').classList.add('painted');
   }
 
   /** Emits a new event. */

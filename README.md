@@ -10,9 +10,8 @@
 <ne14-pxl8r src="..."></ne14-pxl8r>
 ```
 - **src**: Sets a new image source
-- **contrast**: Sets the contrast 0 - 100
-- **x**: Sets the number of pixels in the *x* dimension
-- **y**: Sets the number of pixels in the *y* dimension
+- **filter**: Sets the contrast 0 - 100
+- **resolution**: Sets the number of pixels in the *x* dimension. (The aspect ratio is preserved)
 
 ### Events
 ```javascript
