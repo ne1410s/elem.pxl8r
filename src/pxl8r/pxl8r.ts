@@ -2,11 +2,11 @@ import { CustomElementBase } from '@ne1410s/cust-elems';
 
 import markupUrl from './pxl8r.html';
 import stylesUrl from './pxl8r.css';
-import { RgbaFilter, MonochromeFilter } from '../filter/models';
+import { RgbaFilter, MonochromeFilter, GreyscaleFilter } from '../filter/models';
 
 export class Pxl8r extends CustomElementBase {
 
-  public static readonly observedAttributes = ['src', 'contrast', 'x'];
+  public static readonly observedAttributes = ['src', 'filter', 'resolution'];
 
   private readonly _reader = new FileReader();
   private readonly _original = new Image();
@@ -15,21 +15,25 @@ export class Pxl8r extends CustomElementBase {
 
   private readonly _elemCanvas: HTMLCanvasElement;
   private readonly _context: CanvasRenderingContext2D;
+  private readonly _ctrlForm: HTMLFormElement;
 
-  private readonly _elemBrightness: HTMLInputElement;
-  private readonly _elemX: HTMLInputElement;
-  private readonly _elemPicker: HTMLInputElement;
+  private get _configFilter(): RgbaFilter {
+    switch (this.filter) {
+      case 'bw': return new MonochromeFilter(255 - this._ctrlForm.threshold.value);
+      case 'gs': return new GreyscaleFilter(this._ctrlForm.shades.value);
+    }
+  }
 
   public set src(value: string) {
     if (value) this.setAttribute('src', value);
     else this.removeAttribute('src');
   }
 
-  public set brightness(value: number) { this.setAttribute('x', `${Math.max(0, Math.min(value, 100))}`); }
-  public get brightness(): number { return parseInt(this._elemBrightness.value); }
+  public get filter(): 'bw' | 'gs' { return this._ctrlForm.filter.value; }
+  public set filter(value: 'bw' | 'gs') { this.setAttribute('filter', value); }
 
-  public set x(value: number) { this.setAttribute('x', `${value}`); }
-  public get x(): number { return parseInt(this._elemX.value); }
+  public get resolution(): number { return this._ctrlForm.resolution.value; }
+  public set resolution(value: number) { this.setAttribute('resolution', `${value}`); }
 
   constructor() {
     super(stylesUrl, markupUrl);
@@ -38,41 +42,54 @@ export class Pxl8r extends CustomElementBase {
     this._context = this._elemCanvas.getContext('2d');
     this._context.imageSmoothingEnabled = false;
 
-    this._elemBrightness = this.root.querySelector('#brightness');
-    this._elemX = this.root.querySelector('#pixels-x');
-    this._elemPicker = this.root.querySelector('#filepicker');
-    
     this._original.addEventListener('load', () => this.onImageLoad());
     this._reader.addEventListener('load', e => this._original.src = e.target.result as string);
-    this._elemBrightness.addEventListener('input', () => this.onFilterChange());
-    this._elemX.addEventListener('input', () => this.onDimsChange());
-    this._elemPicker.addEventListener('change', () => {
-      const file = this._elemPicker.files[0];
+
+    this._ctrlForm = this.root.querySelector('#control-panel');
+    this._ctrlForm.querySelectorAll('label.filter').forEach(fCtrl => {
+      fCtrl.addEventListener('input', () => this.onFilterChange());
+    });
+
+    this._ctrlForm.resolution.addEventListener('input', () => this.onDimsChange());
+    
+    const elemPicker = this._ctrlForm.filepicker as HTMLInputElement;
+    elemPicker.addEventListener('change', () => {
+      const file = elemPicker.files[0];
       if (file) {
         this._reader.readAsDataURL(file);
         this.removeAttribute('src');
-        this._elemPicker.value = null;
+        elemPicker.value = null;
       }
     });
+
+    const elemFilter = this._ctrlForm.filter as HTMLSelectElement;
+    elemFilter.addEventListener('change', e => {
+      const val = this._ctrlForm.filter.value;
+      if (!val) this._ctrlForm.removeAttribute('data-filter');
+      else this._ctrlForm.setAttribute('data-filter', val);   
+      this.onFilterChange();
+    });
+    this.fire('change', elemFilter);
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     switch (name) {
       case 'src':
-        this._elemPicker.value = null;
+        this._ctrlForm.filepicker.value = null;
         this._original.src = newValue;
         break;
-      case 'contrast':
-        this._elemBrightness.value = newValue;
+      case 'filter':
+        this._ctrlForm.filter.value = newValue;
         break;
-      case 'x':
-        this._elemX.value = newValue;
+      case 'resolution':
+        const val = parseInt(newValue) || 50;
+        this._ctrlForm.resolution.value = `${Math.max(0, Math.min(val, 100))}`;
         break;
     }
   }
 
   connectedCallback() {
-    //..
+    //...
   }
 
   private onImageLoad() {
@@ -80,9 +97,9 @@ export class Pxl8r extends CustomElementBase {
   }
 
   private onDimsChange() {
-    if (this._original) {
+    if (this._original.src) {
       const aspect = this._original.width / this._original.height;
-      const x = this._elemCanvas.width = this.x;
+      const x = this._elemCanvas.width = this.resolution;
       const y = this._elemCanvas.height = Math.ceil(x / aspect);
 
       this._context.drawImage(this._original, 0, 0, x, y);
@@ -93,23 +110,19 @@ export class Pxl8r extends CustomElementBase {
 
   private onFilterChange() {
     if (this._dimensionData) {
-      //let filter = new GreyscaleFilter(8);
-      let filter = new MonochromeFilter(255 - this.brightness);
+
       this._workingData = new ImageData(
         this._dimensionData.data.slice(),
         this._dimensionData.width,
         this._dimensionData.height);
 
-      this.applyFilter(this._workingData, filter);
-      this.onPixelate();
+      this.applyFilter(this._workingData);
+      this.onPaintPixels();
     }
   }
 
-  private onPixelate() {
-    this._context.putImageData(this._workingData, 0, 0);
-  }
-
-  private applyFilter(arr: ImageData, filter: RgbaFilter): void {
+  private applyFilter(arr: ImageData): void {
+    const filter = this._configFilter;
     for (let i = 3; i < arr.data.length; i += 4) {
       const rgba = arr.data.slice(i - 3, i + 1);
       filter.apply(rgba);
@@ -120,9 +133,13 @@ export class Pxl8r extends CustomElementBase {
     }
   }
 
+  private onPaintPixels() {
+    this._context.putImageData(this._workingData, 0, 0);
+  }
+
   /** Emits a new event. */
-  private fire<T>(event: string, detail?: T) {
-    this.dispatchEvent(new CustomEvent(event, { detail }));
+  private fire<T>(event: string, target?: EventTarget, detail?: T) {
+    (target || this).dispatchEvent(new CustomEvent(event, { detail }));
   }
 
   private debounce<T>(func: (arg: T) => void, delay = 200): (arg: T) => void {
