@@ -17,12 +17,12 @@
 ```javascript
 const tooltip = document.querySelector('ne14-pxl8r');
 
-tooltip.addEventListener('render', () => {
-  console.log('Rendered');
+tooltip.addEventListener('render', event => {
+  console.log('Rendered data:', event.detail);
 });
 ```
 - **change**: Fired when a parameter changes
-- **render**: Fired when pixelation occurs (e.g. after change in parameter(s))
+- **render**: Fired when a filtered data has been applied
 ### Methods
 - *There are no bespoke methods exposed by this element*
 ### Properties

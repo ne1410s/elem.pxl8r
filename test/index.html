@@ -6,12 +6,14 @@
   <script>(function () {
 
     window.addEventListener('load', function() {
-      //...
+      document.querySelector('ne14-pxl8r').addEventListener('render', function(event) {
+        console.log('Rendered data:', event.detail);
+      });
     });
 
   })();</script>
 </head>
 <body>
-  <ne14-pxl8r></ne14-pxl8r>
+  <ne14-pxl8r filter="bw"></ne14-pxl8r>
 </body>
 </html>

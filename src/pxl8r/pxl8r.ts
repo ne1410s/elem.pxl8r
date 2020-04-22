@@ -123,19 +123,22 @@ export class Pxl8r extends CustomElementBase {
 
   private applyFilter(arr: ImageData): void {
     const filter = this._configFilter;
-    for (let i = 3; i < arr.data.length; i += 4) {
-      const rgba = arr.data.slice(i - 3, i + 1);
-      filter.apply(rgba);
-      arr.data[i - 3] = rgba[0];
-      arr.data[i - 2] = rgba[1];
-      arr.data[i - 1] = rgba[2];
-      arr.data[i] = rgba[3];
+    if (filter) {
+      for (let i = 3; i < arr.data.length; i += 4) {
+        const rgba = arr.data.slice(i - 3, i + 1);
+        filter.apply(rgba);
+        arr.data[i - 3] = rgba[0];
+        arr.data[i - 2] = rgba[1];
+        arr.data[i - 1] = rgba[2];
+        arr.data[i] = rgba[3];
+      }
     }
   }
 
   private onPaintPixels() {
     this._context.putImageData(this._workingData, 0, 0);
     this._elemCanvas.closest('.root').classList.add('painted');
+    this.fire('render', this, this._workingData);
   }
 
   /** Emits a new event. */
