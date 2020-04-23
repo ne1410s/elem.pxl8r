@@ -27,14 +27,26 @@ export class GreyscaleFilter implements RgbaFilter {
 
 export class MonochromeFilter implements RgbaFilter {
 
+  private static readonly HEX_REG = /^#(?<r>[0-9a-f]{2})(?<g>[0-9a-f]{2})(?<b>[0-9a-f]{2})$/i;
+  private readonly shade: Rgba;
+
   constructor(
-      private readonly threshold: number = 128,
-      private readonly shade: Rgba = { r: 0, g: 0, b: 0, a: 255 }) {
+      private readonly threshold: number,
+      private readonly inverted: boolean,
+      shadeHex: string) {
+    
+    const groups = MonochromeFilter.HEX_REG.exec(shadeHex).groups;
+    this.shade = { 
+      r: parseInt(groups.r, 16),
+      g: parseInt(groups.g, 16),
+      b: parseInt(groups.b, 16),
+      a: 255
+    };
   }
 
   apply = (rgba: Uint8ClampedArray) => {
     const gs = Math.round((rgba[0] + rgba[1] + rgba[2]) / 3);
-    if (gs < this.threshold) {
+    if ((this.inverted && gs >= this.threshold) || (!this.inverted && gs < this.threshold)) {
       rgba[0] = this.shade.r;
       rgba[1] = this.shade.g;
       rgba[2] = this.shade.b;

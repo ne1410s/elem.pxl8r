@@ -4,27 +4,32 @@
 
   <form id="control-panel">
 
-    <label class="filter bw thin">
+    <label class="filter param bw thin">
       <span>Shade</span>
       <input id="shade" name="shade" type="color"/>
     </label>
-       
-    <label class="filter bw">
+    
+    <label class="filter param bw thin">
+      <span>Invert</span>
+      <input id="invert" name="invert" type="checkbox"/>
+    </label>
+
+    <label class="filter param bw">
       <span>Threshold</span>
       <input id="threshold" name="threshold" type="range" min="0" max="255" step="1"/>
     </label>
 
-    <label class="filter gs">
+    <label class="filter param gs">
       <span>Shades</span>
       <input id="shades" name="shades" type="range" min="2" value="4" max="16" step="1"/>
     </label>
 
-    <label>
+    <label class="param">
       <span>Resolution</span>
       <input id="resolution" name="resolution" type="range" min="1" max="128" step="1"/>
     </label>
     
-    <label class="thin">
+    <label class="param thin">
       <select id="filter" name="filter">
         <option value="-">-</option>
         <option value="bw">BW</option>

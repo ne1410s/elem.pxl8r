@@ -19,7 +19,10 @@ export class Pxl8r extends CustomElementBase {
 
   private get _configFilter(): RgbaFilter {
     switch (this.filter) {
-      case 'bw': return new MonochromeFilter(255 - this._ctrlForm.threshold.value);
+      case 'bw': return new MonochromeFilter(
+          this._ctrlForm.threshold.value,
+          this._ctrlForm.invert.checked,
+          this._ctrlForm.shade.value);
       case 'gs': return new GreyscaleFilter(this._ctrlForm.shades.value);
     }
   }
