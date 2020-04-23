@@ -29,8 +29,16 @@ export class Pxl8r extends CustomElementBase {
     else this.removeAttribute('src');
   }
 
-  public get filter(): 'bw' | 'gs' { return this._ctrlForm.filter.value; }
-  public set filter(value: 'bw' | 'gs') { this.setAttribute('filter', value); }
+  public get filter(): string { return this._ctrlForm.filter.value; }
+  public set filter(value: string) {
+    if (['bw', 'gs'].indexOf(value) !== -1) {
+      this.setAttribute('filter', value);
+    }
+    else {
+      this._ctrlForm.removeAttribute('data-filter');
+      this.removeAttribute('filter');
+    }
+  }
 
   public get resolution(): number { return this._ctrlForm.resolution.value; }
   public set resolution(value: number) { this.setAttribute('resolution', `${value}`); }
@@ -50,8 +58,6 @@ export class Pxl8r extends CustomElementBase {
       fCtrl.addEventListener('input', () => this.onFilterChange());
     });
 
-    this._ctrlForm.resolution.addEventListener('input', () => this.onDimsChange());
-    
     const elemPicker = this._ctrlForm.filepicker as HTMLInputElement;
     elemPicker.addEventListener('change', () => {
       const file = elemPicker.files[0];
@@ -62,14 +68,11 @@ export class Pxl8r extends CustomElementBase {
       }
     });
 
+    const elemResolution = this._ctrlForm.resolution as HTMLInputElement;
+    elemResolution.addEventListener('input', e => this.resolution = parseInt(elemResolution.value));
+
     const elemFilter = this._ctrlForm.filter as HTMLSelectElement;
-    elemFilter.addEventListener('change', e => {
-      const val = this._ctrlForm.filter.value;
-      if (!val) this._ctrlForm.removeAttribute('data-filter');
-      else this._ctrlForm.setAttribute('data-filter', val);   
-      this.onFilterChange();
-    });
-    this.fire('change', elemFilter);
+    elemFilter.addEventListener('change', e => this.filter = elemFilter.value);
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -79,17 +82,20 @@ export class Pxl8r extends CustomElementBase {
         this._original.src = newValue;
         break;
       case 'filter':
-        this._ctrlForm.filter.value = newValue;
+        this._ctrlForm.filter.value = newValue || '-';
+        this._ctrlForm.setAttribute('data-filter', newValue || '-');
+        this.onFilterChange();
         break;
       case 'resolution':
         const val = parseInt(newValue) || 50;
-        this._ctrlForm.resolution.value = `${Math.max(0, Math.min(val, 100))}`;
+        this._ctrlForm.resolution.value = `${Math.max(0, Math.min(val, 128))}`;
+        this.onDimsChange();
         break;
     }
   }
 
   connectedCallback() {
-    //...
+    //this.fire('change', this._ctrlForm.filter);
   }
 
   private onImageLoad() {
