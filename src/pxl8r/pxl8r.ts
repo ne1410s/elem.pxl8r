@@ -32,6 +32,7 @@ export class Pxl8r extends CustomElementBase {
     else this.removeAttribute('src');
   }
 
+  /** The current filter type. */
   public get filter(): string { return this._ctrlForm.filter.value; }
   public set filter(value: string) {
     if (['bw', 'gs'].indexOf(value) !== -1) {
@@ -43,6 +44,7 @@ export class Pxl8r extends CustomElementBase {
     }
   }
 
+  /** The current resolution value. */
   public get resolution(): number { return this._ctrlForm.resolution.value; }
   public set resolution(value: number) { this.setAttribute('resolution', `${value}`); }
 
@@ -101,6 +103,19 @@ export class Pxl8r extends CustomElementBase {
     //this.fire('change', this._ctrlForm.filter);
   }
 
+  /** Adds a custom layer, providing its dimensions match the current image. */
+  overlay(image: ImageData) {
+    if (this._workingData) {
+  
+      const wDims = `${this._workingData.width}x${this._workingData.height}`;
+      const iDims = `${image.width}x${image.height}`;
+      if (iDims !== wDims)
+        throw new RangeError(`Dimension mismatch. Expected: ${wDims} Received: ${iDims}`);
+
+      this._context.putImageData(image, 0, 0);
+    }
+  }
+
   private onImageLoad() {
     this.onDimsChange();
   }
@@ -153,14 +168,5 @@ export class Pxl8r extends CustomElementBase {
   /** Emits a new event. */
   private fire<T>(event: string, target?: EventTarget, detail?: T) {
     (target || this).dispatchEvent(new CustomEvent(event, { detail }));
-  }
-
-  private debounce<T>(func: (arg: T) => void, delay = 200): (arg: T) => void {
-    let timeout: NodeJS.Timeout;
-    return function (arg) {
-      clearTimeout(timeout);
-      const that = this;
-      timeout = setTimeout(() => func.call(that, arg), delay);
-    };
   }
 }
