@@ -10,7 +10,6 @@ export interface Rgba {
 }
 
 export class GreyscaleFilter implements RgbaFilter {
-
   private readonly brackets: number;
 
   constructor(shades: number = 16) {
@@ -22,25 +21,24 @@ export class GreyscaleFilter implements RgbaFilter {
     const bracketed = range(mean, 0, 255 / this.brackets, 0, 255);
     rgba[3] = 255;
     rgba[0] = rgba[1] = rgba[2] = bracketed;
-  }
+  };
 }
 
 export class MonochromeFilter implements RgbaFilter {
-
   private static readonly HEX_REG = /^#(?<r>[0-9a-f]{2})(?<g>[0-9a-f]{2})(?<b>[0-9a-f]{2})$/i;
   private readonly shade: Rgba;
 
   constructor(
-      private readonly threshold: number,
-      private readonly inverted: boolean,
-      shadeHex: string) {
-    
+    private readonly threshold: number,
+    private readonly inverted: boolean,
+    shadeHex: string
+  ) {
     const groups = MonochromeFilter.HEX_REG.exec(shadeHex).groups;
-    this.shade = { 
+    this.shade = {
       r: parseInt(groups.r, 16),
       g: parseInt(groups.g, 16),
       b: parseInt(groups.b, 16),
-      a: 255
+      a: 255,
     };
   }
 
@@ -54,7 +52,7 @@ export class MonochromeFilter implements RgbaFilter {
     } else {
       rgba[0] = rgba[1] = rgba[2] = rgba[3] = 255;
     }
-  } 
+  };
 }
 
 export function range(n: number, df: number, to: number, mn: number, mx: number): number {

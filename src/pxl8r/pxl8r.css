@@ -12,53 +12,70 @@ canvas {
 
 #control-panel {
   position: absolute;
-  top: 0; right: 0;
+  top: 0;
+  right: 0;
   margin: 1em;
-  padding: .5em;
+  padding: 0.5em;
   display: flex;
   align-items: center;
   background-color: #ffffff;
-  font-size: .8rem;
-  opacity: .4;
-  transition: opacity .6s;
+  font-size: 0.8rem;
+  opacity: 0.4;
+  transition: opacity 0.6s;
 }
 
-.root:not(.painted) #control-panel, #control-panel:hover {opacity: 1; }
+.root:not(.painted) #control-panel,
+#control-panel:hover {
+  opacity: 1;
+}
 
-.root.painted #control-panel[data-filter=bw] label.filter.bw { display: block; }
-.root.painted #control-panel[data-filter=gs] label.filter.gs { display: block; }
+.root.painted #control-panel[data-filter='bw'] label.filter.bw {
+  display: block;
+}
+.root.painted #control-panel[data-filter='gs'] label.filter.gs {
+  display: block;
+}
 
 .root:not(.painted) canvas,
-.root:not(.painted) label.param, 
-label.filter, input[type=file] { display: none; }
+.root:not(.painted) label.param,
+label.filter,
+input[type='file'] {
+  display: none;
+}
 
-label.file { padding: 1em; }
-label.thin { width: 3em; }
+label.file {
+  padding: 1em;
+}
+label.thin {
+  width: 3em;
+}
 label {
   position: relative;
   display: block;
   width: 5em;
-  padding: 0 .25em
+  padding: 0 0.25em;
 }
 
 label > span {
   position: absolute;
-  top: 50%; left: 50%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%) scale(1, 2);
   text-transform: uppercase;
   pointer-events: none;
-  font-size: .5em;
+  font-size: 0.5em;
 }
 
 label.file > span {
   border: 1px solid #aaa;
   background-color: #eee;
   pointer-events: all;
-  padding: 0 .5em;
+  padding: 0 0.5em;
   cursor: pointer;
 }
 
-input, select {
+input,
+select {
   font: inherit;
   width: 100%;
   box-sizing: border-box;

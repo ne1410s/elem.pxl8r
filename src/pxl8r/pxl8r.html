@@ -1,34 +1,32 @@
 <div class="root">
-
   <canvas id="canvas"></canvas>
 
   <form id="control-panel">
-
     <label class="filter param bw thin">
       <span>Shade</span>
-      <input id="shade" name="shade" type="color"/>
+      <input id="shade" name="shade" type="color" />
     </label>
-    
+
     <label class="filter param bw thin">
       <span>Invert</span>
-      <input id="invert" name="invert" type="checkbox"/>
+      <input id="invert" name="invert" type="checkbox" />
     </label>
 
     <label class="filter param bw">
       <span>Threshold</span>
-      <input id="threshold" name="threshold" type="range" min="0" max="255" step="1"/>
+      <input id="threshold" name="threshold" type="range" min="0" max="255" step="1" />
     </label>
 
     <label class="filter param gs">
       <span>Shades</span>
-      <input id="shades" name="shades" type="range" min="2" value="4" max="16" step="1"/>
+      <input id="shades" name="shades" type="range" min="2" value="4" max="16" step="1" />
     </label>
 
     <label class="param">
       <span>Resolution</span>
-      <input id="resolution" name="resolution" type="range" min="1" max="128" step="1"/>
+      <input id="resolution" name="resolution" type="range" min="1" max="128" step="1" />
     </label>
-    
+
     <label class="param thin">
       <select id="filter" name="filter">
         <option value="-">-</option>
@@ -39,8 +37,7 @@
 
     <label class="file thin">
       <span>Upload</span>
-      <input id="filepicker" name="filepicker" type="file"/>
+      <input id="filepicker" name="filepicker" type="file" />
     </label>
   </form>
-
 </div>

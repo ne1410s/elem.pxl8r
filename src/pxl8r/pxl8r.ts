@@ -5,7 +5,6 @@ import stylesUrl from './pxl8r.css';
 import { RgbaFilter, MonochromeFilter, GreyscaleFilter } from '../filter/models';
 
 export class Pxl8r extends CustomElementBase {
-
   public static readonly observedAttributes = ['src', 'filter', 'resolution'];
 
   private readonly _reader = new FileReader();
@@ -19,11 +18,14 @@ export class Pxl8r extends CustomElementBase {
 
   private get _configFilter(): RgbaFilter {
     switch (this.filter) {
-      case 'bw': return new MonochromeFilter(
+      case 'bw':
+        return new MonochromeFilter(
           this._ctrlForm.threshold.value,
           this._ctrlForm.invert.checked,
-          this._ctrlForm.shade.value);
-      case 'gs': return new GreyscaleFilter(this._ctrlForm.shades.value);
+          this._ctrlForm.shade.value
+        );
+      case 'gs':
+        return new GreyscaleFilter(this._ctrlForm.shades.value);
     }
   }
 
@@ -33,20 +35,25 @@ export class Pxl8r extends CustomElementBase {
   }
 
   /** The current filter type. */
-  public get filter(): string { return this._ctrlForm.filter.value; }
+  public get filter(): string {
+    return this._ctrlForm.filter.value;
+  }
   public set filter(value: string) {
     if (['bw', 'gs'].indexOf(value) !== -1) {
       this.setAttribute('filter', value);
-    }
-    else {
+    } else {
       this._ctrlForm.removeAttribute('data-filter');
       this.removeAttribute('filter');
     }
   }
 
   /** The current resolution value. */
-  public get resolution(): number { return this._ctrlForm.resolution.value; }
-  public set resolution(value: number) { this.setAttribute('resolution', `${value}`); }
+  public get resolution(): number {
+    return this._ctrlForm.resolution.value;
+  }
+  public set resolution(value: number) {
+    this.setAttribute('resolution', `${value}`);
+  }
 
   constructor() {
     super(stylesUrl, markupUrl);
@@ -56,10 +63,10 @@ export class Pxl8r extends CustomElementBase {
     this._context.imageSmoothingEnabled = false;
 
     this._original.addEventListener('load', () => this.onImageLoad());
-    this._reader.addEventListener('load', e => this._original.src = e.target.result as string);
+    this._reader.addEventListener('load', (e) => (this._original.src = e.target.result as string));
 
     this._ctrlForm = this.root.querySelector('#control-panel');
-    this._ctrlForm.querySelectorAll('label.filter').forEach(fCtrl => {
+    this._ctrlForm.querySelectorAll('label.filter').forEach((fCtrl) => {
       fCtrl.addEventListener('input', () => this.onFilterChange());
     });
 
@@ -74,10 +81,13 @@ export class Pxl8r extends CustomElementBase {
     });
 
     const elemResolution = this._ctrlForm.resolution as HTMLInputElement;
-    elemResolution.addEventListener('input', e => this.resolution = parseInt(elemResolution.value));
+    elemResolution.addEventListener(
+      'input',
+      (e) => (this.resolution = parseInt(elemResolution.value))
+    );
 
     const elemFilter = this._ctrlForm.filter as HTMLSelectElement;
-    elemFilter.addEventListener('change', e => this.filter = elemFilter.value);
+    elemFilter.addEventListener('change', (e) => (this.filter = elemFilter.value));
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -106,7 +116,6 @@ export class Pxl8r extends CustomElementBase {
   /** Adds a custom layer, providing its dimensions match the current image. */
   overlay(image: ImageData) {
     if (this._workingData) {
-  
       const wDims = `${this._workingData.width}x${this._workingData.height}`;
       const iDims = `${image.width}x${image.height}`;
       if (iDims !== wDims)
@@ -123,8 +132,8 @@ export class Pxl8r extends CustomElementBase {
   private onDimsChange() {
     if (this._original.src) {
       const aspect = this._original.width / this._original.height;
-      const x = this._elemCanvas.width = this.resolution;
-      const y = this._elemCanvas.height = Math.ceil(x / aspect);
+      const x = (this._elemCanvas.width = this.resolution);
+      const y = (this._elemCanvas.height = Math.ceil(x / aspect));
 
       this._context.drawImage(this._original, 0, 0, x, y);
       this._dimensionData = this._context.getImageData(0, 0, x, y);
@@ -134,11 +143,11 @@ export class Pxl8r extends CustomElementBase {
 
   private onFilterChange() {
     if (this._dimensionData) {
-
       this._workingData = new ImageData(
         this._dimensionData.data.slice(),
         this._dimensionData.width,
-        this._dimensionData.height);
+        this._dimensionData.height
+      );
 
       this.applyFilter(this._workingData);
       this.onPaintPixels();
