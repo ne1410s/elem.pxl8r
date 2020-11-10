@@ -42,3 +42,7 @@ tooltip.addEventListener('render', (event) => {
 - **contrast** (number): Gets or sets the contrast 0 - 100
 - **x** (number): Gets or sets the number of pixels in the _x_ dimension. The aspect ratio is preserved for y, unless y is otherwise set
 - **y** (number): Gets or sets the number of pixels in the _y_ dimension. The aspect ratio is preserved for x, unless x is otherwise set
+
+### CSS Variables
+
+- _There are no css variables exposed by this element_
