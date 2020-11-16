@@ -1,4 +1,4 @@
-import { CustomElementBase } from '@ne1410s/cust-elems';
+import { CustomElementBase, decode, reduceCss, reduceHtml } from '@ne1410s/cust-elems';
 
 import markupUrl from './pxl8r.html';
 import stylesUrl from './pxl8r.css';
@@ -6,6 +6,8 @@ import { RgbaFilter, MonochromeFilter, GreyscaleFilter } from '../filter/models'
 
 export class Pxl8r extends CustomElementBase {
   public static readonly observedAttributes = ['src', 'filter', 'resolution'];
+  private static readonly Css = reduceCss(decode(stylesUrl));
+  private static readonly Html = reduceHtml(decode(markupUrl));
 
   private readonly _reader = new FileReader();
   private readonly _original = new Image();
@@ -56,7 +58,7 @@ export class Pxl8r extends CustomElementBase {
   }
 
   constructor() {
-    super(stylesUrl, markupUrl);
+    super(Pxl8r.Css, Pxl8r.Html);
 
     this._elemCanvas = this.root.querySelector('#canvas');
     this._context = this._elemCanvas.getContext('2d');
