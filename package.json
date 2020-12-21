@@ -1,6 +1,6 @@
 {
   "name": "@ne1410s/pxl8r",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A custom element that facilitates image pixelation.",
   "main": "dist/ne14_pxl8r.cjs.min.js",
   "module": "dist/ne14_pxl8r.esm.min.js",
